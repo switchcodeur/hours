@@ -1,6 +1,6 @@
-body {
+html, body {
     font: 13px "Fira Sans", sans-serif;
-    height: 100vh;
+    height: 100%;
     margin: 0;
     list-style-type: none;
     display: grid;
