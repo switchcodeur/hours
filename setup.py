@@ -1,4 +1,7 @@
 from db import User
 
-user = User("admin", "admin", True)
+user = User("JANIN", "fromagerielatournette", True)
+user.save()
+
+user = User("FOURET", "fromagerielatournette", True)
 user.save()
