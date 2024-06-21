@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire</title>
+
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <span class="logo"><img src="/assets/images/logo-groupe-lactalis.svg"></span>
+        <table>
+            <tr>
+                <td>
+                    <ul id="users"></ul>
+                </td>
+                <td>
+                    <ul id="places"></ul>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" id="username" placeholder="Nom d'utilisateur">
+                    <button type="button" id="addUser">Ajouter</button>
+                    <p id="password"></p>
+                </td>
+                <td>
+                    <input type="text" id="place" placeholder="Nom du site">
+                    <button id="addPlace">Ajouter</button>
+                    <p></p>
+                </td>
+            </tr>
+        </table>
+        <span><a href="/">Se déconnecter</a> ● <a href="/account.html">Gérer le compte</a></span>
+        
+    </div>
+    <script type="module" src="/assets/js/admin.js"></script>
+</body>
+</html>

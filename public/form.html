@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire</title>
+
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <span class="logo"><img src="/assets/images/logo-groupe-lactalis.svg"></span>
+        <p id="user">Connecté en tant que </p>
+        <table>
+            <tr>
+                <td>Site</td>
+                <td>
+                    <select	id="place">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Jour</td>
+                <td><input type="date" id="day"></td>
+            </tr>
+            <tr>
+                <td>Horaires</td>
+                <td><input type="time" id="start"> - <input type="time" id="end"></td>
+            </tr>
+            <tr>
+                <td>Durée de la pause</td>
+                <td><input type="time" id="break"></td>
+            </tr>
+            <tr>
+                <td>Frais</td>
+                <td><input type="number" id="fees">€</td>
+            </tr>
+        </table>
+        <button type="button" id="addHours">Soumettre</button>
+        <span><a href="/">Se déconnecter</a> ● <a href="/account.html">Gérer le compte</a></span>
+    </div>
+    <script type="module" src="/assets/js/form.js"></script>
+</body>
+</html>
