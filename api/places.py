@@ -1,40 +1,57 @@
 from flask import Blueprint, jsonify, request, Response
 
-from db import getPlaces, addPlace, rmPlace
-from utils.authorization import getUser
+from db.database import Session, Place
+from utils.auth import get_authorization
+
 
 blueprint = Blueprint("places", __name__, url_prefix="/api/places")
 
+
 @blueprint.route("/", methods=["GET"])
-def _getPlaces():
-    user = getUser()
-    if not user.valid:
-        return jsonify({"message": "401 Unauthorized"})
-
-    return jsonify(getPlaces())
-
-@blueprint.route("/", methods=["POST"])
-def _addPlace():
-    user = getUser()
-    if not user.valid and not user.administrator:
+def get():
+    auth = get_authorization()
+    if not auth.valid:
         return Response(status=401)
-    
-    json = request.get_json()
-    if not json.get("name"):
-        return Response(status=400)
 
-    addPlace(json.get("name"))
+    session = Session()
+    res = session.query(Place.name).all()
+    session.close()
+
+    places = []
+    for place in res:
+        places.append(place[0])
+
+    return jsonify(places)
+
+
+@blueprint.route("/<string:name>", methods=["PUT"])
+def put(name):
+    auth = get_authorization()
+    if not auth.valid or not auth.user.administrator:
+        return Response(status=401)
+
+    session = Session()
+
+    if not session.query(Place.name).where(Place.name == name).all():
+        place = Place(name=name)
+        
+        session.add(place)
+        session.commit()
+
+    session.close()
+
     return Response(status=200)
 
-@blueprint.route("/", methods=["DELETE"])
-def _rmPlace():
-    user = getUser()
-    if not user.valid and not user.administrator:
+
+@blueprint.route("/<string:place>", methods=["DELETE"])
+def delete(place: str):
+    auth = get_authorization()
+    if not auth.valid or not auth.user.administrator:
         return Response(status=401)
     
-    json = request.get_json()
-    if not json.get("place"):
-        return Response(status=400)
-    print(json)
-    rmPlace(json.get("place"))
+    session = Session()
+    session.query(Place).where(Place.name == place).delete()
+    session.commit()
+    session.close()
+
     return Response(status=200)

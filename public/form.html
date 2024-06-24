@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulaire</title>
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="container">
-        <span class="logo"><img src="/assets/images/logo-groupe-lactalis.svg"></span>
         <p id="user">Connecté en tant que </p>
         <table>
             <tr>
@@ -39,6 +38,36 @@
         <button type="button" id="addHours">Soumettre</button>
         <span><a href="/">Se déconnecter</a> ● <a href="/account.html">Gérer le compte</a></span>
     </div>
-    <script type="module" src="/assets/js/form.js"></script>
+    <script type="module">
+        import { redirect } from "/modules/utils/redirection.js";
+        import { get } from "/modules/api/places.js";
+        import { post } from "/modules/api/hours.js";
+
+
+        async function list_places() {
+            let res = await get();
+            var places = document.getElementById("place");
+
+            for (let i in res) {
+                places.innerHTML += `<option value="${res[i]}">${res[i]}</option>`
+            }
+        }
+
+
+        document.getElementById("addHours").onclick = async () => {
+            await post(
+                document.getElementById("place").value || "(non indiqué)",
+                document.getElementById("day").value || "(non indiqué)",
+                document.getElementById("start").value || "(non indiqué)",
+                document.getElementById("end").value || "(non indiqué)",
+                document.getElementById("fees").value || 0,
+                document.getElementById("break").value || "(non indiqué)"
+            );
+        };
+
+        await redirect();
+
+        list_places();
+    </script>
 </body>
 </html>

@@ -5,14 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion du compte</title>
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div id="container">
         <input id="password" type="password" placeholder="Nouveau mot de passe">
-        <button type="button" id="submit">Soumettre</button>
+        <button type="button" id="register">Enregistrer</button>
     </div>
 
-    <script type="module" src="/assets/js/account.js"></script>
+    <script type="module">
+        import { redirect } from "/modules/utils/redirection.js";
+        import { put } from "/modules/api/users.js";
+        import { encrypt } from "/modules/utils/encryption.js";
+
+
+        await redirect();
+        
+        
+        document.getElementById("register").onclick = async () => {
+            await put(sessionStorage.getItem("username"), await encrypt(document.getElementById("password").value));
+        }
+    </script>
 </body>
 </html>

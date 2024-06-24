@@ -1,48 +1,67 @@
 from flask import Blueprint, jsonify, Response, request
-from logging import getLogger
+from secrets import choice as rchoice
 
-from db import getUsernames, isAdministrator, User, delUser
-from utils.authorization import getUser
-from utils.password import generate
+from db.database import User, Session
+from utils.auth import get_authorization
+from utils.encryption import encrypt
 
-logger = getLogger()
+
 blueprint = Blueprint("users", __name__, url_prefix="/api/users")
 
+
 @blueprint.route("/", methods=["GET"])
-def _getUsernames():
-    return jsonify(getUsernames())
+def get():
+    session = Session()
+    users = {}
 
-@blueprint.route("/auth", methods=["POST"])
-def isValid():
-    user = getUser(not request.get_json().get("encrypted"))
-    return jsonify({"valid": user.valid, "password": user.password})
+    for user in session.query(User).all():
+       users[user.name] = {"administrator": user.administrator}
 
-@blueprint.route("/<string:username>", methods=["GET"])
-def getInformations(username: str):
-    return jsonify({"administrator": isAdministrator(username)})
+    session.close()
+    return jsonify(users)
+
 
 @blueprint.route("/<string:username>", methods=["PUT"])
-def addUser(username):
-    user = getUser()
-    if not user.valid and not user.administrator:
-        return Response(status=401)
+def put(username: str):
+    auth = get_authorization()
+    if not auth.valid and not auth.user.name == username:
+        if not auth.user.administrator:
+            return Response(status=401)
 
-    password = generate(12)
+    characters = [chr(i) for i in range(33, 127)]
+    password = "".join([rchoice(characters) for i in range(12)])
+    encrypted_password = None
+
+    session = Session()
+    administrator = session.query(User.administrator).where(User.name == username).scalar()
+    session.query(User).where(User.name == username).delete()
 
     json = request.get_json()
-    if json and json.get("password"):
-        password = json.get("password")
+    if json:
+        encrypted_password = json.get("password")
+        
 
-    new = User(username, password)
-    new.save()
+    user = User(
+        name=username,
+        password=encrypted_password or encrypt(password),
+        administrator=administrator or False
+    )
+    session.add(user)
+    session.commit()
+    session.close()
 
     return jsonify({"password": password})
 
+
 @blueprint.route("/<string:username>", methods=["DELETE"])
-def rmUser(username: str):
-    user = getUser()
-    if not user.valid and not user.administrator:
+def delete(username: str):
+    auth = get_authorization()
+    if not auth.valid or not auth.user.administrator:
         return Response(status=401)
     
-    delUser(username)
+    session = Session()
+    session.query(User).where(User.name == username).delete()
+    session.commit()
+    session.close()
+
     return Response(status=200)

@@ -1,0 +1,26 @@
+html, body {
+    font: 13px "Fira Sans", sans-serif;
+    height: 100%;
+    margin: 0;
+    list-style-type: none;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    margin: auto;
+    margin-bottom: 23px;
+}
+
+.container {
+    display: grid;
+}
+
+.container input { 
+    margin-top: 2px; 
+}
+
+.container button { 
+    margin-top: 6px; 
+}

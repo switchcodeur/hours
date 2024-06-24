@@ -1,26 +1,50 @@
 from flask import Blueprint, jsonify, request, Response
 from logging import getLogger
 
-from db import addHours, getHours
-from utils.authorization import getUser
+from db.database import Session, Hours
+from utils.auth import get_authorization
 
 logger = getLogger()
 blueprint = Blueprint("hours", __name__, url_prefix="/api/hours")
 
-@blueprint.route("/<string:username>", methods=["POST"])
-def _addHours(username: str):
-    user = getUser()
-    if user.name != username and not user.valid:
+@blueprint.route("/", methods=["POST"])
+def post():
+    auth = get_authorization()
+    if not auth.valid:
         return Response(status=401)
     
     json = request.get_json()
-    addHours(username, json["place"], json["day"], json["start"], json["end"], json["fees"], json["break"])
+    
+    session = Session()
+    hours = Hours(
+        username=auth.user.name,
+        place=json["place"],
+        day=json["day"],
+        start=json["start"],
+        end=json["end"],
+        fees=json["fees"],
+        _break=json["break"]
+    )
+    session.add(hours)
+    session.commit()
+    
     return Response(status=200)
 
 @blueprint.route("/<string:username>", methods=["GET"])
-def _getHours(username: str):
-    user = getUser()
-    if not user.valid or not any([user.name == username, user.administrator]):
+def get(username: str):
+    auth = get_authorization()
+    if not auth.valid or not auth.user.administrator:
         return Response(status=401)
 
-    return jsonify(getHours(username))
+    session = Session()
+    hours = [
+        {
+            "start": _hours.start,
+            "end": _hours.end,
+            "break": _hours._break,
+            "fees": _hours.fees
+        } for _hours in session.query(Hours).where(Hours.username == username).all()
+    ]
+    session.close()
+
+    return jsonify(hours)

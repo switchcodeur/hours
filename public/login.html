@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="username" autocomplete="false" autocapitalize="false" placeholder="Nom d'utilisateur">
+        <input type="password" id="password" autocomplete="false" autocapitalize="false" placeholder="Mot de passe">
+        <button type="button" id="login">Connection</button>
+            
+        <p id="output"></p>
+    </div>
+    
+    <script type="module">
+        import { auth } from "/modules/api/auth.js";
+        import { redirect } from "/modules/utils/redirection.js";
+        import { encrypt } from "/modules/utils/encryption.js";
+
+        
+        document.getElementById("login").onclick = async () => {
+            sessionStorage.setItem("username", document.getElementById("username").value);
+            sessionStorage.setItem("password", await encrypt(document.getElementById("password").value));
+
+            let valid = await auth();
+            if (!valid) {
+                document.getElementById("output").innerHTML = "Le nom d'utilisateur ou le mot de passe est erroné.";
+                return;
+            }
+            
+            await redirect();
+        };
+    </script>
+</body>
+</html>

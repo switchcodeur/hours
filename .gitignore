@@ -1,0 +1,5 @@
+*/.vscode
+*/__pycache__
+db/database.sqlite3
+logs
+server.conf

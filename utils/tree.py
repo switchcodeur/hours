@@ -1,5 +1,5 @@
 from os import listdir, PathLike
-from os.path import isdir, normpath
+from os.path import isdir
 
 
 def tree(directory: PathLike) -> list:

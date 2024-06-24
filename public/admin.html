@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulaire</title>
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="container">
-        <span class="logo"><img src="/assets/images/logo-groupe-lactalis.svg"></span>
         <table>
             <tr>
                 <td>
@@ -35,6 +34,127 @@
         <span><a href="/">Se déconnecter</a> ● <a href="/account.html">Gérer le compte</a></span>
         
     </div>
-    <script type="module" src="/assets/js/admin.js"></script>
+
+    <script type="module">
+        import { _delete as del_user, get as get_users, put as put_user } from "/modules/api/users.js";
+        import { _delete as del_place, get as get_places, put as put_place } from "/modules/api/places.js";
+        import { redirect } from "/modules/utils/redirection.js";
+        import { get as get_hours } from "/modules/api/hours.js";
+
+
+        async function download(username) {
+            var element = document.createElement('a');
+            let filename = `${username}.txt`;
+
+            let text = "";
+            let res = await get_hours(username);
+
+            for (let i in res) {
+                text += `${username} a été le ${res[i].day} de ${res[i].start} à ${res[i].end} sur le site ${res[i].place} et a fait une pause de ${res[i].break} minutes.\r\n\r\n`;
+            }
+
+
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+
+
+        async function _del_user(element) {
+            del_user(element.value);
+            element.parentNode.remove();
+        }
+
+
+        async function add_user(ul, username) {
+            var li = document.createElement("li");
+            li.innerText = username;
+
+            var button = document.createElement("button");
+            button.innerText = "Télécharger";
+            button.value = username
+            button.onclick = async () => { await download(username) };
+            li.appendChild(button);
+
+            var button = document.createElement("button");
+            button.innerText = "Supprimer";
+            button.value = username;
+            button.onclick = async () => { await _del_user(button) };
+            li.appendChild(button);
+
+            ul.appendChild(li);
+        }
+
+
+        async function list_users() {
+            let users = await get_users()
+
+            var ul = document.getElementById("users");
+            ul.innerHTML = "";
+
+            for (username in users) {
+                if (!users[username].administrator) {
+                    await add_user(ul, username);
+                }
+            }
+        }
+
+
+        document.getElementById("addUser").onclick = async () => {
+            let res = await put_user(document.getElementById("username").value);
+            document.getElementById("password").innerText = `Mot de passe : ${res.password}`;
+            
+            await list_users();
+        };
+
+
+        async function _del_place(element) {
+            del_place(element.value);
+            element.parentNode.remove();
+        }
+
+
+        async function add_place(ul, place) {
+            var li = document.createElement("li");
+            li.innerText = place;
+
+            var button = document.createElement("button");
+            button.innerText = "Supprimer";
+            button.value = place;
+            button.onclick = async () => { await _del_place(button) };
+            li.appendChild(button);
+
+            ul.appendChild(li);
+        }
+
+
+        async function list_places() {
+            let res = await get_places();
+
+            var ul = document.getElementById("places");
+            ul.innerHTML = "";
+
+            for (let index in res) {
+                await add_place(ul, res[index]) 
+            }
+        }
+
+
+        document.getElementById("addPlace").onclick = async () => {
+            await put_place(document.getElementById("place").value);
+            await list_places();
+        };
+
+        await redirect();
+
+        list_users();
+        list_places();
+    </script>
 </body>
 </html>
