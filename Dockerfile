@@ -4,8 +4,7 @@ COPY . /web
 
 WORKDIR /web
 
-RUN pip install --no-cache -r requirements.txt \
-    && python3 -B setup.py
+RUN pip install --no-cache -r requirements.txt
 
 EXPOSE 8080
 
