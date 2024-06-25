@@ -98,7 +98,7 @@
             var ul = document.getElementById("users");
             ul.innerHTML = "";
 
-            for (username in users) {
+            for (let username in users) {
                 if (!users[username].administrator) {
                     await add_user(ul, username);
                 }
