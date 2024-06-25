@@ -78,12 +78,14 @@
 
             var button = document.createElement("button");
             button.innerText = "Télécharger";
-            button.value = username
+            button.id = "download";
+            button.value = username;
             button.onclick = async () => { await download(username) };
             li.appendChild(button);
 
             var button = document.createElement("button");
             button.innerText = "Supprimer";
+            button.id = "delete";
             button.value = username;
             button.onclick = async () => { await _del_user(button) };
             li.appendChild(button);

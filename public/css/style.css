@@ -24,3 +24,16 @@ html, body {
 .container button { 
     margin-top: 6px; 
 }
+
+li * {
+    margin-left: 10px;
+}
+
+li #download {
+    background-color: greenyellow;
+}
+
+li #delete {
+    background-color: red;
+    color: white;
+}
