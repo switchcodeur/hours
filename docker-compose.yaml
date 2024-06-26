@@ -1,0 +1,14 @@
+services:
+  hours:
+    build: .
+    restart: always
+    container_name: hours
+    ports: 
+      - "8080:8080"
+    volumes:
+      - type: volume
+        source: hours
+        target: /web/logs
+
+volumes:
+  hours:
