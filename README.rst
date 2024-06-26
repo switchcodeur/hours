@@ -11,10 +11,14 @@ stage
     Uses ``sqlalchemy`` to manage the ``sqlite`` database and provides ``Session`` class.
 
 
+Requirements
+------------
+
+- ``docker``, ``docker-compose``
+
 Usage
 -----
 
 .. code-block:: console
 
-    docker build -t stage .
-    docker run -d -p 8080:8080 --name stage stage
+    docker compose up -d
