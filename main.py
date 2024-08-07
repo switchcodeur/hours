@@ -4,7 +4,13 @@ from configparser import RawConfigParser
 from api.loader import load as load_api
 from db.database import Session, User
 from utils.encryption import encrypt
-import utils.logging
+from logger import init as init_logger
+
+
+app = Flask(__name__)
+
+logger = init_logger("logs")
+load_api(app)
 
 
 def add_administrators():
@@ -24,11 +30,6 @@ def add_administrators():
             session.add(user)
     
     session.commit()
-
-
-app = Flask(__name__)
-
-load_api(app)
 
 
 @app.route("/<path:path>")
